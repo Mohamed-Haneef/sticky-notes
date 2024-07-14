@@ -30,12 +30,16 @@ const Notes = ({ token }) => {
             <input type="text" value={content} onChange={(e) => setContent(e.target.value)} />
             <button onClick={handleAddNote}>Add Note</button>
             <ul>
-                {notes.map(note => (
-                    <li key={note._id}>
-                        {note.content}
-                        <button onClick={() => handleDelete(note._id)}>Delete</button>
-                    </li>
-                ))}
+                {Array.isArray(notes) && notes.length > 0 ? (
+                    notes.map(note => (
+                        <li key={note._id}>
+                            {note.content}
+                            <button onClick={() => handleDelete(note._id)}>Delete</button>
+                        </li>
+                    ))
+                ) : (
+                    <li>No notes available</li>
+                )}
             </ul>
         </div>
     );

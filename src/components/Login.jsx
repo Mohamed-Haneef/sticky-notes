@@ -4,14 +4,14 @@ import { api } from '../api';
 const Login = ({ setToken }) => {
     const [username, setUsername] = useState('');
     const [password, setPassword] = useState('');
-
     const handleSubmit = async (e) => {
         e.preventDefault();
         const data = await api('/api/auth/login', 'POST', { username, password });
         if (data.token) {
+            alert("Login success")
             setToken(data.token);
         } else {
-            alert(data.message);
+            alert(data);
         }
     };
 

@@ -7,11 +7,16 @@ const Register = () => {
 
     const handleSubmit = async (e) => {
         e.preventDefault();
-        const data = await api('/api/auth/register', 'POST', { username, password });
-        if (data.message) {
-            alert(data.message);
-        } else {
-            alert('Error registering user');
+        try {
+            const response = await api('/api/auth/register', 'POST', { username, password });
+            if (response.message) {
+                alert(response.message);
+            } else {
+                alert('Error registering user he');
+            }
+        } catch (error) {
+            console.error('Registration error:', error);
+            alert('Error registering user he');
         }
     };
 
