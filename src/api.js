@@ -1,4 +1,5 @@
 const url = 'https://notezard.selfmade.social';
+
 export const api = async (endpoint, method = 'GET', body) => {
     const token = localStorage.getItem('token');
     const response = await fetch(url + endpoint, {
@@ -12,11 +13,21 @@ export const api = async (endpoint, method = 'GET', body) => {
 
     if (!response.ok) {
         const errorText = await response.text();
-        return errorText;
+        try {
+            const errorJson = JSON.parse(errorText);
+            if (errorJson.token_failure) {
+                localStorage.removeItem('token');
+            }
+        } catch (error) {
+            return { error: errorText };
+        }
+
+        return { error: errorText };
     }
 
     try {
-        return await response.json();
+        const responseMsg = await response.json();
+        return { success: responseMsg };
     } catch (error) {
         return null;
     }

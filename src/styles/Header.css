@@ -1,0 +1,40 @@
+.header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px 20px;
+    background-color: #B0C4DE;
+    color: #191970;
+}
+
+.logo h1 {
+    margin: 0;
+}
+
+.nav-container {
+    display: flex;
+    align-items: center;
+}
+
+.nav-container a {
+    color: #fff;
+    text-decoration: none;
+    margin: 0 10px;
+}
+
+.nav-container a:hover {
+    text-decoration: underline;
+}
+
+.logout-button {
+    padding: 10px 20px;
+    background-color: #e74c3c;
+    color: #fff;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+.logout-button:hover {
+    background-color: #c0392b;
+}
