@@ -10,13 +10,11 @@ const App = () => {
     const [token, setToken] = useState(localStorage.getItem('token'));
 
     useEffect(() => {
-        console.log("useEffect token: " + token);
         if (token) {
             localStorage.setItem('token', token);
         } else {
             localStorage.removeItem('token');
         }
-        console.log("useEffect token end: " + token);
     }, [token]);
 
     return (

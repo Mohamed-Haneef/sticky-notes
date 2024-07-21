@@ -1,6 +1,24 @@
 .app-container {
+    position: relative;
     width: 100%;
     margin: 0 auto;
-    background-color: #ffffff;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    overflow: hidden;
+}
+
+.app-container::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-image: url('https://img.freepik.com/free-vector/outline-books-with-graduation-cap-apple-frame-background_24640-45271.jpg?w=1380&t=st=1721586132~exp=1721586732~hmac=8d863e6cf10976330a422867d092a544af0a2dab3b845997612b78533268fffe');
+    background-size: cover;
+    background-position: center;
+    filter: blur(5px);
+    z-index: -1;
+}
+
+::-webkit-scrollbar {
+    display: none;
 }

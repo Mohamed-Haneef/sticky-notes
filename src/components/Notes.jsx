@@ -6,13 +6,12 @@ const Notes = ({ token, setToken }) => {
     const [notes, setNotes] = useState([]);
     const [content, setContent] = useState('');
     const [loading, setLoading] = useState(true);
-    const [modalContent, setModalContent] = useState(null);
-    const [isModalOpen, setIsModalOpen] = useState(false);
+    const [editModalVisible, setEditModalVisible] = useState(false);
+    const [currentNote, setCurrentNote] = useState(null);
 
     useEffect(() => {
         const fetchNotes = async () => {
             setLoading(true);
-            console.log("Note fetching: " + token);
             const data = await api('/api/notes');
             if (data.error) {
                 localStorage.removeItem('token');
@@ -29,8 +28,10 @@ const Notes = ({ token, setToken }) => {
     }, [token, setToken]);
 
     const handleAddNote = async () => {
-        if (!content.trim()) {
-            alert("Note cannot be empty");
+        const trimmedContent = content.replace(/[\u0009-\u000D\u0020\u0085\u00A0\u1680\u2000-\u200A\u2028\u2029\u202F\u205F\u3000]/g, '');
+
+        if (!trimmedContent) {
+            alert("Note cannot be empty or just whitespace");
             return;
         }
 
@@ -45,7 +46,6 @@ const Notes = ({ token, setToken }) => {
                 alert("Error adding note: " + JSON.stringify(newNote));
             }
         } catch (error) {
-            console.error("Error adding note:", error);
             alert("An error occurred while adding the note. Please try again.");
         } finally {
             setLoading(false);
@@ -59,14 +59,30 @@ const Notes = ({ token, setToken }) => {
         setLoading(false);
     };
 
-    const openModal = (noteContent) => {
-        setModalContent(noteContent);
-        setIsModalOpen(true);
+    const handleEdit = async () => {
+        if (!currentNote.content.trim()) {
+            alert("Note cannot be empty");
+            return;
+        }
+        setLoading(true);
+        const updatedNote = await api(`/api/notes/${currentNote._id}`, 'PUT', { content: currentNote.content });
+        if (updatedNote.success) {
+            setNotes(notes.map(note => note._id === currentNote._id ? updatedNote.success : note));
+            setEditModalVisible(false);
+        } else {
+            alert("Error updating note: " + JSON.stringify(updatedNote));
+        }
+        setLoading(false);
     };
 
-    const closeModal = () => {
-        setModalContent(null);
-        setIsModalOpen(false);
+    const openEditModal = (note) => {
+        setCurrentNote(note);
+        setEditModalVisible(true);
+    };
+
+    const closeEditModal = () => {
+        setEditModalVisible(false);
+        setCurrentNote(null);
     };
 
     return (
@@ -76,19 +92,9 @@ const Notes = ({ token, setToken }) => {
                     <div className="spinner"></div>
                 </div>
             )}
-            {isModalOpen && (
-                <div className="modal">
-                    <div className="modal-content">
-                        <button className="close-button" onClick={closeModal}>X</button>
-                        <div className="modal-body">
-                            <p>{modalContent}</p>
-                        </div>
-                    </div>
-                </div>
-            )}
             <h1 className="notes-title">Notes</h1>
             <div className="note-box">
-                <input
+                <textarea
                     className="notes-input"
                     type="text"
                     value={content}
@@ -101,9 +107,11 @@ const Notes = ({ token, setToken }) => {
                 {Array.isArray(notes) && notes.length > 0 ? (
                     notes.map(note => (
                         <li key={note._id} className="note-item">
-                            <p>{note.content}</p>
+                            <div className='note-content-box'>
+                                <p>{note.content}</p>
+                            </div>
                             <div className='button-box'>
-                                <button className="view-button" onClick={() => openModal(note.content)}>View</button>
+                                <button className="view-button" onClick={() => openEditModal(note)}>Edit</button>
                                 <button className="delete-button" onClick={() => handleDelete(note._id)}>Delete</button>
                             </div>
                         </li>
@@ -112,6 +120,25 @@ const Notes = ({ token, setToken }) => {
                     <li className="no-notes">No notes available, Add your note above!!</li>
                 )}
             </ul>
+            {editModalVisible && (
+                <div className="modal">
+                    <div className="modal-content">
+                        <button className="close-button" onClick={closeEditModal}>X</button>
+                        <textarea
+                            style={{ marginTop: '20px', backgroundColor: '#3498db' }}
+
+                            value={currentNote.content}
+                            onChange={(e) => setCurrentNote({
+                                ...currentNote,
+                                content: e.target.value
+                            })}
+                        ></textarea>
+                        <div className="save-box">
+                            <button className="save-button" onClick={handleEdit}>Save</button>
+                        </div>
+                    </div>
+                </div>
+            )}
         </div>
     );
 };
